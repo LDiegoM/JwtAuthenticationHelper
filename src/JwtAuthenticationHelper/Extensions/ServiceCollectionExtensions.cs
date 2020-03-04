@@ -71,7 +71,8 @@ namespace JwtAuthenticationHelper.Extensions
                 // Perhaps in the future I can add some kind of hooks in the token generator that can
                 // let the referencing application know that the token has expired and the developer
                 // can then request a new token without the user having to re-login.
-                options.Cookie.Expiration = TimeSpan.FromMinutes(1);
+                //options.Cookie.Expiration = TimeSpan.FromMinutes(1);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
 
                 // Specify the TicketDataFormat to use to validate/create the ASP.NET authentication
                 // ticket. Its important that the same validation parameters are passed to this class
