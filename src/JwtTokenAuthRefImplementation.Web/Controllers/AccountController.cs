@@ -9,20 +9,16 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace JwtTokenAuthRefImplementation.Web.Controllers
-{
-    public class AccountController : Controller
-    {
+namespace JwtTokenAuthRefImplementation.Web.Controllers {
+    public class AccountController : Controller {
         private readonly IJwtTokenGenerator tokenGenerator;
 
-        public AccountController(IJwtTokenGenerator tokenGenerator)
-        {
+        public AccountController(IJwtTokenGenerator tokenGenerator) {
             this.tokenGenerator = tokenGenerator;
         }
 
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
-        {
+        public IActionResult Login(string returnUrl = null) {
             ViewBag.returnUrl = returnUrl;
 
             return View();
@@ -31,27 +27,21 @@ namespace JwtTokenAuthRefImplementation.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(UserCredentials userCredentials, string returnUrl = null)
-        {
+        public async Task<IActionResult> Login(UserCredentials userCredentials, string returnUrl = null) {
             ViewBag.returnUrl = returnUrl;
             var returnTo = "/Account/Login";
 
             // Replace this with your custom authentication logic which will
             // securely return the authenticated user's details including
             // any role specific info
-            if (userCredentials.Username == "user1" && userCredentials.Password == "pass1")
-            {
-                var userInfo = new UserInfo
-                {
+            if (userCredentials.Username == "user1" && userCredentials.Password == "pass1") {
+                var userInfo = new UserInfo {
                     FirstName = "UserFName",
                     LastName = "UserLName"
                 };
 
-                var accessTokenResult = tokenGenerator.GenerateAccessTokenWithClaimsPrincipal(
-                    userCredentials.Username,
-                    AddMyClaims(userInfo));
-                await HttpContext.SignInAsync(accessTokenResult.ClaimsPrincipal,
-                    accessTokenResult.AuthProperties);
+                var accessTokenResult = tokenGenerator.GenerateAccessTokenWithClaimsPrincipal(userCredentials.Username, AddMyClaims(userInfo));
+                await HttpContext.SignInAsync(accessTokenResult.ClaimsPrincipal, accessTokenResult.AuthProperties);
                 returnTo = returnUrl;
             }
 

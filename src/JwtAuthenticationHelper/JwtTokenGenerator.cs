@@ -8,13 +8,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 
-namespace JwtAuthenticationHelper
-{
+namespace JwtAuthenticationHelper {
     /// <summary>
     /// A generic Json Web Token generator for use with token based authentication in web applications
     /// </summary>
-    public sealed class JwtTokenGenerator : IJwtTokenGenerator
-    {
+    public sealed class JwtTokenGenerator : IJwtTokenGenerator {
         private readonly TokenOptions tokenOptions;
 
         /// <summary>
@@ -22,15 +20,13 @@ namespace JwtAuthenticationHelper
         /// </summary>
         /// <param name="tokenOptions"></param>
 
-        public JwtTokenGenerator(TokenOptions tokenOptions)
-        {
+        public JwtTokenGenerator(TokenOptions tokenOptions) {
             this.tokenOptions = tokenOptions ??
                 throw new ArgumentNullException(
                     $"An instance of valid {nameof(TokenOptions)} must be passed in order to generate a JWT!"); ;
         }
 
-        public string GenerateAccessToken(string userName, IEnumerable<Claim> userClaims)
-        {
+        public string GenerateAccessToken(string userName, IEnumerable<Claim> userClaims) {
             var expiration = TimeSpan.FromMinutes(this.tokenOptions.TokenExpiryInMinutes);
             var jwt = new JwtSecurityToken(issuer: this.tokenOptions.Issuer,
                                            audience: this.tokenOptions.Audience,
@@ -46,14 +42,11 @@ namespace JwtAuthenticationHelper
             return accessToken;
         }
 
-        public TokenWithClaimsPrincipal GenerateAccessTokenWithClaimsPrincipal(string userName,
-            IEnumerable<Claim> userClaims)
-        {
+        public TokenWithClaimsPrincipal GenerateAccessTokenWithClaimsPrincipal(string userName, IEnumerable<Claim> userClaims) {
             var userClaimList = userClaims.ToList();
             var accessToken = this.GenerateAccessToken(userName, userClaimList);
 
-            return new TokenWithClaimsPrincipal()
-            {
+            return new TokenWithClaimsPrincipal() {
                 AccessToken = accessToken,
                 ClaimsPrincipal = ClaimsPrincipalFactory.CreatePrincipal(
                     MergeUserClaimsWithDefaultClaims(userName, userClaimList)),
@@ -61,14 +54,11 @@ namespace JwtAuthenticationHelper
             };
         }
 
-        private static AuthenticationProperties CreateAuthProperties(string accessToken)
-        {
+        private static AuthenticationProperties CreateAuthProperties(string accessToken) {
             var authProps = new AuthenticationProperties();
             authProps.StoreTokens(
-                new[]
-                {
-                    new AuthenticationToken()
-                    {
+                new[] {
+                    new AuthenticationToken() {
                         Name = TokenConstants.TokenName,
                         Value = accessToken
                     }
@@ -77,17 +67,12 @@ namespace JwtAuthenticationHelper
             return authProps;
         }
 
-        private static IEnumerable<Claim> MergeUserClaimsWithDefaultClaims(string userName,
-            IEnumerable<Claim> userClaims)
-        {
-            var claims = new List<Claim>(userClaims)
-            {
+        private static IEnumerable<Claim> MergeUserClaimsWithDefaultClaims(string userName, IEnumerable<Claim> userClaims) {
+            var claims = new List<Claim>(userClaims) {
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(JwtRegisteredClaimNames.Sub, userName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, 
-                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                    ClaimValueTypes.Integer64)
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
 
             return claims;

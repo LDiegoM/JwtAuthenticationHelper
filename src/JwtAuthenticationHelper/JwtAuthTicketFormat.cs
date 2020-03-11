@@ -5,14 +5,12 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace JwtAuthenticationHelper
-{
+namespace JwtAuthenticationHelper {
     /// <summary>
     /// An implementation of <see cref="ISecureDataFormat{TData}"/> to securely store a Json Web
     /// Token (JWT) in a cookie i.e. <see cref="AuthenticationTicket"/>
     /// </summary>
-    public sealed class JwtAuthTicketFormat : ISecureDataFormat<AuthenticationTicket>
-    {
+    public sealed class JwtAuthTicketFormat : ISecureDataFormat<AuthenticationTicket> {
         private const string Algorithm = SecurityAlgorithms.HmacSha256;
         private readonly TokenValidationParameters validationParameters;
         private readonly IDataSerializer<AuthenticationTicket> ticketSerializer;
@@ -33,10 +31,7 @@ namespace JwtAuthenticationHelper
         /// an implementation of <see cref="IDataProtector"/> used to securely encrypt and decrypt
         /// the authentication ticket.
         /// </param>
-        public JwtAuthTicketFormat(TokenValidationParameters validationParameters,
-            IDataSerializer<AuthenticationTicket> ticketSerializer,
-            IDataProtector dataProtector)
-        {
+        public JwtAuthTicketFormat(TokenValidationParameters validationParameters, IDataSerializer<AuthenticationTicket> ticketSerializer, IDataProtector dataProtector) {
             this.validationParameters = validationParameters ??
                 throw new ArgumentNullException($"{nameof(validationParameters)} cannot be null");
             this.ticketSerializer = ticketSerializer ??
@@ -51,8 +46,7 @@ namespace JwtAuthenticationHelper
         /// </summary>
         /// <param name="protectedText"></param>
         /// <returns></returns>
-        public AuthenticationTicket Unprotect(string protectedText)
-            => Unprotect(protectedText, null);
+        public AuthenticationTicket Unprotect(string protectedText) => Unprotect(protectedText, null);
 
         /// <summary>
         /// Does the exact opposite of the Protect methods i.e. converts an encrypted string back to
@@ -62,33 +56,25 @@ namespace JwtAuthenticationHelper
         /// <param name="protectedText"></param>
         /// <param name="purpose"></param>
         /// <returns></returns>
-        public AuthenticationTicket Unprotect(string protectedText, string purpose)
-        {
+        public AuthenticationTicket Unprotect(string protectedText, string purpose) {
             var authTicket = ticketSerializer.Deserialize(
-                dataProtector.Unprotect(
-                    Base64UrlTextEncoder.Decode(protectedText)));
+                dataProtector.Unprotect(Base64UrlTextEncoder.Decode(protectedText)));
 
-            var embeddedJwt = authTicket
-                .Properties?
-                .GetTokenValue(TokenConstants.TokenName);
+            var embeddedJwt = authTicket.Properties?.GetTokenValue(TokenConstants.TokenName);
 
-            try
-            {
+            try {
                 new JwtSecurityTokenHandler()
                     .ValidateToken(embeddedJwt, validationParameters, out var token);
 
-                if (!(token is JwtSecurityToken jwt))
-                {
+                if (!(token is JwtSecurityToken jwt)) {
                     throw new SecurityTokenValidationException("JWT token was found to be invalid");
                 }
 
-                if (!jwt.Header.Alg.Equals(Algorithm, StringComparison.Ordinal))
-                {
+                if (!jwt.Header.Alg.Equals(Algorithm, StringComparison.Ordinal)) {
                     throw new ArgumentException($"Algorithm must be '{Algorithm}'");
                 }
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 return null;
             }
 
@@ -110,8 +96,7 @@ namespace JwtAuthenticationHelper
         /// <param name="data">an instance of <see cref="AuthenticationTicket"/></param>
         /// <param name="purpose">a purpose string</param>
         /// <returns>encrypted string representing the <see cref="AuthenticationTicket"/></returns>
-        public string Protect(AuthenticationTicket data, string purpose)
-        {
+        public string Protect(AuthenticationTicket data, string purpose) {
             var array = ticketSerializer.Serialize(data);
 
             return Base64UrlTextEncoder.Encode(dataProtector.Protect(array));

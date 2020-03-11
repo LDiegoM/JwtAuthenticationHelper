@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace JwtAuthenticationHelper.Abstractions
-{
-    public interface IJwtTokenGenerator
-    {
+namespace JwtAuthenticationHelper.Abstractions {
+    public interface IJwtTokenGenerator {
         /// <summary>
         /// Generate a JSON Web Token with a ClaimsPrincipal object both containing the claims passed
         /// in. Use this method for ASP.NET Core application with cookie authentication.
@@ -16,8 +14,7 @@ namespace JwtAuthenticationHelper.Abstractions
         /// <see cref="TokenWithClaimsPrincipal"/> containing the JWT and the <see
         /// cref="ClaimsPrincipal"/> instance
         /// </returns>
-        TokenWithClaimsPrincipal GenerateAccessTokenWithClaimsPrincipal(string userName,
-            IEnumerable<Claim> userClaims);
+        TokenWithClaimsPrincipal GenerateAccessTokenWithClaimsPrincipal(string userName, IEnumerable<Claim> userClaims);
 
         /// <summary>
         /// Generate a string JSON Web Token containing the claims passed in. Use this method for

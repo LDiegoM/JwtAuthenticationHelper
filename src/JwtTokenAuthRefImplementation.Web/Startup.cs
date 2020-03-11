@@ -19,35 +19,27 @@ namespace JwtTokenAuthRefImplementation.Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) {
             var tokenOptions = new TokenOptions(
                 Configuration["Token:Audience"],
                 Configuration["Token:Issuer"],
                 Configuration["Token:SigningKey"]);
 
-            services.AddJwtAuthenticationWithProtectedCookie(
-                tokenOptions);
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("RequiresAdmin",
-                    policy =>
-                    policy.RequireClaim("HasAdminRights"));
+            services.AddJwtAuthenticationWithProtectedCookie(tokenOptions);
+            services.AddAuthorization(options => {
+                options.AddPolicy("RequiresAdmin", policy => policy.RequireClaim("HasAdminRights"));
             });
 
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 //app.UseBrowserLink();
             }
-            else
-            {
+            else {
                 app.UseExceptionHandler("/Home/Error");
             }
 
